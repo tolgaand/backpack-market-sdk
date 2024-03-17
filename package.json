@@ -1,6 +1,6 @@
 {
   "name": "backpack-market-sdk",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A TypeScript SDK for interacting with the Backpack Exchange API.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
