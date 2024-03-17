@@ -7,7 +7,7 @@ import {
   DepositAddress,
   Order,
   Fill,
-} from "../tests/types";
+} from "./types";
 
 export class AuthenticatedAPI {
   private apiCommunication: APICommunication;

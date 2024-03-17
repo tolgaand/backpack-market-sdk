@@ -1,12 +1,5 @@
 import { APICommunication } from "./utils/api-communication";
-import {
-  Asset,
-  Market,
-  Ticker,
-  Trade,
-  Kline,
-  SystemStatus,
-} from "../tests/types";
+import { Asset, Market, Ticker, Trade, Kline, SystemStatus } from "./types";
 
 export class MarketAPI {
   private apiCommunication: APICommunication;
