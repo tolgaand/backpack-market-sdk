@@ -17,10 +17,7 @@ export class MarketAPI {
   }
 
   async getTicker(symbol: string): Promise<Ticker> {
-    return this.apiCommunication.sendRequest(
-      "GET",
-      `/api/v1/ticker?symbol=${symbol}`
-    );
+    return this.apiCommunication.sendRequest("GET", `/api/v1/ticker?symbol=${symbol}`);
   }
 
   async getTickers(): Promise<Ticker[]> {
@@ -29,10 +26,7 @@ export class MarketAPI {
 
   async getDepth(symbol: string): Promise<any> {
     // Define a specific type for depth
-    return this.apiCommunication.sendRequest(
-      "GET",
-      `/api/v1/depth?symbol=${symbol}`
-    );
+    return this.apiCommunication.sendRequest("GET", `/api/v1/depth?symbol=${symbol}`);
   }
 
   async getKlines(
