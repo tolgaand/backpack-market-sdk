@@ -1,6 +1,6 @@
 import { APICommunication } from "./utils/api-communication";
 import { Asset, Market, Ticker, Trade, Kline, SystemStatus } from "./types";
-import { MARKET_ENDPOINTS } from "./constants/market-api";
+import { MARKET_ENDPOINTS } from "./constants/market-endpoints";
 
 export class MarketAPI {
   private apiCommunication: APICommunication;
