@@ -1,64 +1,186 @@
+import axios from "axios";
+import createMockInstance from "jest-create-mock-instance";
 import { MarketAPI } from "../src/market-api";
+import { APIClient } from "../src/utils/api-client";
+import { HttpMethod } from "../src/constants";
+import { MARKET_ENDPOINTS } from "../src/constants/market-endpoints";
+
+jest.mock("axios");
+
+const mAxios = axios as jest.MockedFunction<typeof axios>;
+mAxios.mockResolvedValue({});
 
 describe("MarketAPI", () => {
   let marketApi: MarketAPI;
+  let apiClient: jest.Mocked<APIClient>;
 
-  beforeAll(() => {
-    marketApi = new MarketAPI();
+  const data = { success: true };
+
+  beforeEach(() => {
+    apiClient = createMockInstance(APIClient);
+    marketApi = new MarketAPI(apiClient);
+    apiClient.sendRequest.mockResolvedValue(data);
   });
 
   test("getAssets", async () => {
-    const assets = await marketApi.getAssets();
-    expect(assets).toBeDefined();
+    // Arrange
+    const endpoint = MARKET_ENDPOINTS.ASSETS;
+
+    // Act
+    const result = await marketApi.getAssets();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(HttpMethod.GET, endpoint);
   });
 
   test("getMarkets", async () => {
-    const markets = await marketApi.getMarkets();
-    expect(markets).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.MARKETS;
+
+    // Act
+    const result = await marketApi.getMarkets();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getTicker", async () => {
-    const ticker = await marketApi.getTicker("SOL_USDC");
-    expect(ticker).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const symbol = "SOL_USDC";
+    const endpoint = MARKET_ENDPOINTS.TICKER(symbol);
+
+    // Act
+    const result = await marketApi.getTicker(symbol);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getTickers", async () => {
-    const tickers = await marketApi.getTickers();
-    expect(tickers).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.TICKERS;
+
+    // Act
+    const result = await marketApi.getTickers();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getDepth", async () => {
-    const depth = await marketApi.getDepth("SOL_USDC");
-    expect(depth).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const symbol = "SOL_USDC";
+    const endpoint = MARKET_ENDPOINTS.DEPTH(symbol);
+
+    // Act
+    const result = await marketApi.getDepth(symbol);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getKlines", async () => {
-    const klines = await marketApi.getKlines("SOL_USDC", "1h");
-    expect(klines).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const symbol = "SOL_USDC";
+    const interval = "1h";
+    const endpoint = MARKET_ENDPOINTS.KLINES(symbol, interval);
+
+    // Act
+    const result = await marketApi.getKlines(symbol, interval);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getStatus", async () => {
-    const status = await marketApi.getStatus();
-    expect(status).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.STATUS;
+
+    // Act
+    const result = await marketApi.getStatus();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getPing", async () => {
-    const ping = await marketApi.getPing();
-    expect(ping).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.PING;
+
+    // Act
+    const result = await marketApi.getPing();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getSystemTime", async () => {
-    const time = await marketApi.getSystemTime();
-    expect(time).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.TIME;
+
+    // Act
+    const result = await marketApi.getSystemTime();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getRecentTrades", async () => {
-    const trades = await marketApi.getRecentTrades("SOL_USDC");
-    expect(trades).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const symbol = "SOL_USDC";
+    const limit = 100;
+    const endpoint = MARKET_ENDPOINTS.RECENT_TRADES(symbol, limit);
+
+    // Act
+    const result = await marketApi.getRecentTrades(symbol, limit);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getHistoricalTrades", async () => {
-    const trades = await marketApi.getHistoricalTrades("SOL_USDC");
-    expect(trades).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const symbol = "SOL_USDC";
+    const limit = 100;
+    const offset = 10;
+    const endpoint = MARKET_ENDPOINTS.HISTORICAL_TRADES(symbol, limit, offset);
+
+    // Act
+    const result = await marketApi.getHistoricalTrades(symbol, limit, offset);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 });
