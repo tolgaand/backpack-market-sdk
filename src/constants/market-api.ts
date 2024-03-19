@@ -20,14 +20,14 @@ export const MARKET_ENDPOINTS = {
       endpoint: "/trades/history",
       params: { symbol, limit: limit.toString(), offset: offset.toString() },
     }),
-  KLINES: (symbol: string, interval: number, startTime: number, endTime: number) =>
+  KLINES: (symbol: string, interval: string, startTime?: number, endTime?: number) =>
     buildUrl({
       endpoint: "/klines",
       params: {
         symbol,
-        interval: interval.toString(),
-        startTime: startTime.toString(),
-        endTime: endTime.toString(),
+        interval,
+        startTime: startTime?.toString(),
+        endTime: endTime?.toString(),
       },
     }),
 };
