@@ -2,6 +2,7 @@ import { APICommunication } from "./utils/api-communication";
 import { Cryptography } from "./utils/cryptography";
 import { Balance, Deposit, Withdrawal, DepositAddress, Order, Fill } from "./types";
 import { AUTHENTICATED_ENDPOINTS } from "./constants/authenticated-endpoints";
+import { INSTRUCTIONS } from "./constants/instructions";
 
 export class AuthenticatedAPI {
   private apiCommunication: APICommunication;
@@ -17,7 +18,7 @@ export class AuthenticatedAPI {
 
   async getBalances(): Promise<Record<string, Balance>> {
     return this.apiCommunication.sendRequest("GET", AUTHENTICATED_ENDPOINTS.CAPITAL, {
-      instruction: "balanceQuery",
+      instruction: INSTRUCTIONS.BALANCE_QUERY,
     });
   }
 
@@ -27,7 +28,7 @@ export class AuthenticatedAPI {
     return this.apiCommunication.sendRequest(
       "GET",
       AUTHENTICATED_ENDPOINTS.DEPOSITS(limit, offset),
-      { instruction: "depositQueryAll" }
+      { instruction: INSTRUCTIONS.DEPOSIT_QUERY_ALL }
     );
   }
 
@@ -35,7 +36,7 @@ export class AuthenticatedAPI {
     return this.apiCommunication.sendRequest(
       "GET",
       AUTHENTICATED_ENDPOINTS.DEPOSIT_ADDRESS(blockchain),
-      { instruction: "depositAddressQuery" }
+      { instruction: INSTRUCTIONS.DEPOSIT_ADDRESS_QUERY }
     );
   }
 
@@ -45,7 +46,7 @@ export class AuthenticatedAPI {
       "GET",
       AUTHENTICATED_ENDPOINTS.WITHDRAWALS(limit, offset),
       {
-        instruction: "withdrawalQueryAll",
+        instruction: INSTRUCTIONS.WITHDRAWAL_QUERY_ALL,
       }
     );
   }
@@ -70,7 +71,7 @@ export class AuthenticatedAPI {
     };
     return this.apiCommunication.sendRequest("POST", AUTHENTICATED_ENDPOINTS.WITHDRAWALS(), {
       ...body,
-      instruction: "withdraw",
+      instruction: INSTRUCTIONS.WITHDRAW,
     });
   }
 
@@ -83,7 +84,7 @@ export class AuthenticatedAPI {
       "GET",
       AUTHENTICATED_ENDPOINTS.ORDER_HISTORY(limit, offset, symbol),
       {
-        instruction: "orderHistoryQueryAll",
+        instruction: INSTRUCTIONS.ORDER_HISTORY_QUERY_ALL,
       }
     );
   }
@@ -93,7 +94,7 @@ export class AuthenticatedAPI {
       "GET",
       AUTHENTICATED_ENDPOINTS.FILL_HISTORY(limit, offset, symbol),
       {
-        instruction: "fillHistoryQueryAll",
+        instruction: INSTRUCTIONS.FILL_HISTORY_QUERY_ALL,
       }
     );
   }
@@ -138,7 +139,7 @@ export class AuthenticatedAPI {
     };
     return this.apiCommunication.sendRequest("POST", AUTHENTICATED_ENDPOINTS.ORDER(), {
       ...body,
-      instruction: "orderExecute",
+      instruction: INSTRUCTIONS.ORDER_EXECUTE,
     });
   }
 
@@ -155,7 +156,7 @@ export class AuthenticatedAPI {
       "GET",
       AUTHENTICATED_ENDPOINTS.ORDER(symbol, orderId, clientId),
       {
-        instruction: "orderQuery",
+        instruction: INSTRUCTIONS.ORDER_QUERY,
       }
     );
   }
@@ -164,20 +165,20 @@ export class AuthenticatedAPI {
     const body = { orderId, symbol };
     return this.apiCommunication.sendRequest("DELETE", AUTHENTICATED_ENDPOINTS.ORDER(), {
       ...body,
-      instruction: "orderCancel",
+      instruction: INSTRUCTIONS.ORDER_CANCEL,
     });
   }
 
   async getOpenOrders(symbol?: string): Promise<Order[]> {
     return this.apiCommunication.sendRequest("GET", AUTHENTICATED_ENDPOINTS.ORDERS(symbol), {
-      instruction: "orderQueryAll",
+      instruction: INSTRUCTIONS.ORDER_QUERY_ALL,
     });
   }
 
   async cancelOpenOrders(symbol: string): Promise<string> {
     return this.apiCommunication.sendRequest("DELETE", AUTHENTICATED_ENDPOINTS.ORDERS(), {
       symbol,
-      instruction: "orderCancelAll",
+      instruction: INSTRUCTIONS.ORDER_CANCEL_ALL,
     });
   }
 }
