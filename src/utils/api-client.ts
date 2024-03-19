@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { Cryptography } from "./cryptography";
 import { HttpMethod } from "../constants";
 
-export class APICommunication {
+export class APIClient {
   private cryptography: Cryptography | null;
   private signatureBase64 = "";
 
