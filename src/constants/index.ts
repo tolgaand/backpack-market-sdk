@@ -6,3 +6,11 @@ export enum BASE_URL {
   API = `${BASE_API_URL}/api/${API_VERSION}`,
   WAPI = `${BASE_API_URL}/wapi/${API_VERSION}`,
 }
+
+export enum HttpMethod {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  PATCH = "PATCH",
+  DELETE = "DELETE",
+}

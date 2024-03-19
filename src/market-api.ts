@@ -1,6 +1,7 @@
 import { APICommunication } from "./utils/api-communication";
 import { Asset, Market, Ticker, Trade, Kline, SystemStatus } from "./types";
 import { MARKET_ENDPOINTS } from "./constants/market-endpoints";
+import { HttpMethod } from "./constants";
 
 export class MarketAPI {
   private apiCommunication: APICommunication;
@@ -10,24 +11,24 @@ export class MarketAPI {
   }
 
   async getAssets(): Promise<Asset[]> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.ASSETS);
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.ASSETS);
   }
 
   async getMarkets(): Promise<Market[]> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.MARKETS);
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.MARKETS);
   }
 
   async getTicker(symbol: string): Promise<Ticker> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.TICKER(symbol));
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKER(symbol));
   }
 
   async getTickers(): Promise<Ticker[]> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.TICKERS);
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKERS);
   }
 
   async getDepth(symbol: string): Promise<any> {
     // Define a specific type for depth
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.DEPTH(symbol));
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.DEPTH(symbol));
   }
 
   async getKlines(
@@ -37,25 +38,28 @@ export class MarketAPI {
     endTime?: number
   ): Promise<Kline[]> {
     return this.apiCommunication.sendRequest(
-      "GET",
+      HttpMethod.GET,
       MARKET_ENDPOINTS.KLINES(symbol, interval, startTime, endTime)
     );
   }
 
   async getStatus(): Promise<SystemStatus> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.STATUS);
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.STATUS);
   }
 
   async getPing(): Promise<string> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.PING);
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.PING);
   }
 
   async getSystemTime(): Promise<number> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.TIME);
+    return this.apiCommunication.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TIME);
   }
 
   async getRecentTrades(symbol: string, limit: number = 100): Promise<Trade[]> {
-    return this.apiCommunication.sendRequest("GET", MARKET_ENDPOINTS.RECENT_TRADES(symbol, limit));
+    return this.apiCommunication.sendRequest(
+      HttpMethod.GET,
+      MARKET_ENDPOINTS.RECENT_TRADES(symbol, limit)
+    );
   }
 
   async getHistoricalTrades(
@@ -64,7 +68,7 @@ export class MarketAPI {
     offset: number = 0
   ): Promise<Trade[]> {
     return this.apiCommunication.sendRequest(
-      "GET",
+      HttpMethod.GET,
       MARKET_ENDPOINTS.HISTORICAL_TRADES(symbol, limit, offset)
     );
   }

@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { Cryptography } from "./cryptography";
+import { HttpMethod } from "../constants";
 
 export class APICommunication {
   private cryptography: Cryptography | null;
@@ -10,9 +11,9 @@ export class APICommunication {
   }
 
   async sendRequest(
-    method: "GET" | "POST" | "DELETE",
+    method: HttpMethod,
     endpoint: string,
-    additionalParams: Record<string, string> = {},
+    additionalParams: Record<string, any> = {},
     headers: Record<string, string> = {}
   ): Promise<any> {
     const timestamp = Date.now();
@@ -53,7 +54,7 @@ export class APICommunication {
   private buildOrderedParamString(
     timestamp: number,
     window: number,
-    additionalParams: Record<string, string> = {}
+    additionalParams: Record<string, any> = {}
   ) {
     const params = new URLSearchParams();
 
