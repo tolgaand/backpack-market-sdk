@@ -24,6 +24,7 @@ describe("MarketAPI", () => {
 
   test("getAssets", async () => {
     // Arrange
+    const method = HttpMethod.GET;
     const endpoint = MARKET_ENDPOINTS.ASSETS;
 
     // Act
@@ -32,7 +33,7 @@ describe("MarketAPI", () => {
     // Assert
     expect(result).toEqual(data);
     expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
-    expect(apiClient.sendRequest).toHaveBeenCalledWith(HttpMethod.GET, endpoint);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getMarkets", async () => {

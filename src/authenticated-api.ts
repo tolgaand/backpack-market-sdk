@@ -8,13 +8,13 @@ import { HttpMethod } from "./constants";
 export class AuthenticatedAPI {
   private apiClient: APIClient;
 
-  constructor(params: { apiKey: string; secretKey: string }) {
+  constructor(params: { apiKey: string; secretKey: string }, apiClient: APIClient) {
     const { apiKey, secretKey } = params;
 
     if (!apiKey || !secretKey) throw new Error("API Key and Secret Key are required");
 
     const cryptography = new Cryptography(apiKey, secretKey);
-    this.apiClient = new APIClient(cryptography);
+    this.apiClient = apiClient ?? new APIClient(cryptography);
   }
 
   async getBalances(): Promise<Record<string, Balance>> {

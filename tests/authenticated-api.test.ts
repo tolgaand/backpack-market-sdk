@@ -1,92 +1,259 @@
+import axios from "axios";
+import createMockInstance from "jest-create-mock-instance";
 import { AuthenticatedAPI } from "../src/authenticated-api";
+import { APIClient } from "../src/utils/api-client";
+import { AUTHENTICATED_ENDPOINTS } from "../src/constants/authenticated-endpoints";
+import { HttpMethod } from "../src/constants";
+import * as naclUtil from "tweetnacl-util";
+import { INSTRUCTIONS } from "../src/constants/instructions";
+
+jest.mock("axios");
+
+const mAxios = axios as jest.MockedFunction<typeof axios>;
+mAxios.mockResolvedValue({});
 
 describe("AuthenticatedAPI", () => {
   let authenticatedApi: AuthenticatedAPI;
+  let apiClient: jest.Mocked<APIClient>;
 
-  beforeAll(() => {
-    authenticatedApi = new AuthenticatedAPI({
-      apiKey: "<your-api-key>",
-      secretKey: "<y>our-secret-key>",
-    });
+  const data = { success: true };
+
+  beforeEach(() => {
+    apiClient = createMockInstance(APIClient);
+
+    const apiKey = naclUtil.encodeBase64(new Uint8Array(10));
+    const secretKey = naclUtil.encodeBase64(new Uint8Array(10));
+
+    authenticatedApi = new AuthenticatedAPI({ apiKey, secretKey }, apiClient);
+    apiClient.sendRequest.mockResolvedValue(data);
   });
 
   test("getBalances", async () => {
-    const balances = await authenticatedApi.getBalances();
-    expect(balances).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = AUTHENTICATED_ENDPOINTS.CAPITAL;
+
+    // Act
+    const result = await authenticatedApi.getBalances();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.BALANCE_QUERY,
+    });
   });
 
   test("getDeposits", async () => {
-    const deposits = await authenticatedApi.getDeposits();
-    expect(deposits).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const limit = 100;
+    const offset = 10;
+    const endpoint = AUTHENTICATED_ENDPOINTS.DEPOSITS(limit, offset);
+
+    // Act
+    const result = await authenticatedApi.getDeposits({ limit, offset });
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.DEPOSIT_QUERY_ALL,
+    });
   });
 
   test("getDepositAddress", async () => {
-    const depositAddress = await authenticatedApi.getDepositAddress("BTC");
-    expect(depositAddress).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const blockchain = "BTC";
+    const endpoint = AUTHENTICATED_ENDPOINTS.DEPOSIT_ADDRESS(blockchain);
+
+    // Act
+    const result = await authenticatedApi.getDepositAddress(blockchain);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.DEPOSIT_ADDRESS_QUERY,
+    });
   });
 
   test("getWithdrawals", async () => {
-    const withdrawals = await authenticatedApi.getWithdrawals();
-    expect(withdrawals).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const limit = 100;
+    const offset = 10;
+    const endpoint = AUTHENTICATED_ENDPOINTS.WITHDRAWALS(limit, offset);
+
+    // Act
+    const result = await authenticatedApi.getWithdrawals({ limit, offset });
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.WITHDRAWAL_QUERY_ALL,
+    });
   });
 
   test("requestWithdrawal", async () => {
-    const withdrawal = await authenticatedApi.requestWithdrawal({
+    // Arrange
+    const method = HttpMethod.POST;
+    const endpoint = AUTHENTICATED_ENDPOINTS.WITHDRAWALS();
+    const body = {
       quantity: 1,
       symbol: "SOL_USDC",
       blockchain: "Solana",
-      address: "xx",
+      address: "xxx",
+    };
+
+    // Act
+    const result = await authenticatedApi.requestWithdrawal(body);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      ...body,
+      instruction: INSTRUCTIONS.WITHDRAW,
     });
-    expect(withdrawal).toBeDefined();
   });
 
   test("getOrderHistory", async () => {
-    const orderHistory = await authenticatedApi.getOrderHistory();
-    expect(orderHistory).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const limit = 100;
+    const offset = 10;
+    const symbol = "SOL_USDC";
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER_HISTORY(limit, offset, symbol);
+
+    // Act
+    const result = await authenticatedApi.getOrderHistory({ limit, offset, symbol });
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.ORDER_HISTORY_QUERY_ALL,
+    });
   });
 
   test("getFillHistory", async () => {
-    const fillHistory = await authenticatedApi.getFillHistory();
-    expect(fillHistory).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const limit = 100;
+    const offset = 10;
+    const symbol = "SOL_USDC";
+    const endpoint = AUTHENTICATED_ENDPOINTS.FILL_HISTORY(limit, offset, symbol);
+
+    // Act
+    const result = await authenticatedApi.getFillHistory(symbol, limit, offset);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.FILL_HISTORY_QUERY_ALL,
+    });
   });
 
   test("getOpenOrder", async () => {
-    const openOrder = await authenticatedApi.getOpenOrder({
-      symbol: "SOL_USDC",
+    // Arrange
+    const method = HttpMethod.GET;
+    const orderId = "1";
+    const clientId = "2";
+    const symbol = "SOL_USDC";
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER(symbol, orderId, clientId);
+
+    // Act
+    const result = await authenticatedApi.getOpenOrder({ orderId, clientId, symbol });
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.ORDER_QUERY,
     });
-    expect(openOrder).toBeDefined();
   });
 
   test("cancelOrder", async () => {
-    const cancelOrder = await authenticatedApi.cancelOrder({
+    // Arrange
+    const method = HttpMethod.DELETE;
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER();
+    const body = {
+      orderId: "1",
       symbol: "SOL_USDC",
-      orderId: "123",
+    };
+
+    // Act
+    const result = await authenticatedApi.cancelOrder(body);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      ...body,
+      instruction: INSTRUCTIONS.ORDER_CANCEL,
     });
-    expect(cancelOrder).toBeDefined();
   });
 
-  describe("executeOrder", () => {
-    test("should execute an order", async () => {
-      const orderData = {
-        orderType: "Limit",
-        price: 1,
-        quantity: 1,
-        side: "Bid",
-        symbol: "BTCUSDT",
-      };
-      const executedOrder = await authenticatedApi.executeOrder(orderData);
-      expect(executedOrder).toBeDefined();
-      expect(executedOrder.symbol).toEqual(orderData.symbol);
+  test("executeOrder", async () => {
+    // Arrange
+    const method = HttpMethod.POST;
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER();
+    const body = {
+      orderType: "Limit",
+      price: 1,
+      quantity: 1,
+      side: "Bid",
+      symbol: "BTCUSDT",
+    };
+
+    // Act
+    const result = await authenticatedApi.executeOrder(body);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      ...body,
+      instruction: INSTRUCTIONS.ORDER_EXECUTE,
     });
   });
 
   test("getOpenOrders", async () => {
-    const openOrders = await authenticatedApi.getOpenOrders();
-    expect(openOrders).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const symbol = "SOL_USDC";
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDERS(symbol);
+
+    // Act
+    const result = await authenticatedApi.getOpenOrders(symbol);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      instruction: INSTRUCTIONS.ORDER_QUERY_ALL,
+    });
   });
 
   test("cancelOpenOrders", async () => {
-    const cancelOpenOrders = await authenticatedApi.cancelOpenOrders("SOL_USDC");
-    expect(cancelOpenOrders).toBeDefined();
+    // Arrange
+    const method = HttpMethod.DELETE;
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDERS();
+    const symbol = "SOL_USDC";
+
+    // Act
+    const result = await authenticatedApi.cancelOpenOrders(symbol);
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint, {
+      symbol,
+      instruction: INSTRUCTIONS.ORDER_CANCEL_ALL,
+    });
   });
 });
