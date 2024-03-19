@@ -1,29 +1,33 @@
+import { buildUrl } from "../utils/build-url";
+
 export const MARKET_ENDPOINTS = {
-  ASSETS: "/assets",
-  MARKETS: "/markets",
-  TICKERS: "/tickers",
-  STATUS: "/status",
-  PING: "/ping",
-  TIME: "/time",
+  ASSETS: buildUrl({ endpoint: "/assets" }),
+  MARKETS: buildUrl({ endpoint: "/markets" }),
+  TICKERS: buildUrl({ endpoint: "/tickers" }),
+  STATUS: buildUrl({ endpoint: "/status" }),
+  PING: buildUrl({ endpoint: "/ping" }),
+  TIME: buildUrl({ endpoint: "/time" }),
 
-  TICKER: (symbol: string) => `/ticker?symbol=${symbol}`,
-  DEPTH: (symbol: string) => `/depth?symbol=${symbol}`,
-  RECENT_TRADES: (symbol: string, limit: number) => `/trades?symbol=${symbol}&limit=${limit}`,
+  TICKER: (symbol: string) => buildUrl({ endpoint: "/ticker", params: { symbol } }),
+  DEPTH: (symbol: string) => buildUrl({ endpoint: "/depth", params: { symbol } }),
+  RECENT_TRADES: (symbol: string, limit: number) =>
+    buildUrl({
+      endpoint: "/trades",
+      params: { symbol, limit: limit.toString() },
+    }),
   HISTORICAL_TRADES: (symbol: string, limit: number, offset: number) =>
-    `/trades/history?symbol=${symbol}&limit=${limit}&offset=${offset}`,
-
-  KLINES: (symbol: string, interval: number, startTime: number, endTime: number) => {
-    const params = new URLSearchParams();
-
-    params.set("symbol", symbol);
-    params.set("interval", interval.toString());
-
-    if (startTime) {
-      params.set("startTime", startTime.toString());
-    }
-    if (endTime !== undefined) {
-      params.set("endTime", endTime.toString());
-    }
-    return `/klines?${params.toString()}`;
-  },
+    buildUrl({
+      endpoint: "/trades/history",
+      params: { symbol, limit: limit.toString(), offset: offset.toString() },
+    }),
+  KLINES: (symbol: string, interval: number, startTime: number, endTime: number) =>
+    buildUrl({
+      endpoint: "/klines",
+      params: {
+        symbol,
+        interval: interval.toString(),
+        startTime: startTime.toString(),
+        endTime: endTime.toString(),
+      },
+    }),
 };
