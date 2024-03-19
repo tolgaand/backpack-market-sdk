@@ -1,10 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { Cryptography } from "./cryptography";
 
-axios.defaults.baseURL = "https://api.backpack.exchange";
-
 export class APICommunication {
   private cryptography: Cryptography | null;
+  private signatureBase64 = "";
 
   constructor(cryptography: Cryptography | null) {
     this.cryptography = cryptography;
@@ -13,38 +12,20 @@ export class APICommunication {
   async sendRequest(
     method: "GET" | "POST" | "DELETE",
     endpoint: string,
-    additionalParams: Record<string, any> = {},
+    additionalParams: Record<string, string> = {},
     headers: Record<string, string> = {}
   ): Promise<any> {
     const timestamp = Date.now();
     const window = 60000;
 
-    const params: Record<string, any> = {
-      ...additionalParams,
-      timestamp,
-      window,
-    };
-    const orderedParams: Record<string, any> = {};
-    Object.keys(params)
-      .sort()
-      .forEach((key) => {
-        orderedParams[key] = params[key];
-      });
-
-    const paramString = Object.entries(orderedParams)
-      .map(([key, value]) => `${key}=${value}`)
-      .join("&");
-
-    let signatureBase64 = "";
     if (this.cryptography) {
-      const encodedParams = this.cryptography.encodeParams(paramString);
-      const signature = this.cryptography.generateSignature(encodedParams);
-      signatureBase64 = this.cryptography.encodeBase64(signature);
+      const paramString = this.buildOrderedParamString(timestamp, window, additionalParams);
+      this.signatureBase64 = this.createSignature(paramString);
     }
 
     const requestHeaders = {
       "X-API-Key": this.cryptography ? this.cryptography.getApiKeyBase64() : "",
-      "X-Signature": signatureBase64,
+      "X-Signature": this.signatureBase64,
       "X-Timestamp": timestamp,
       "X-Window": window,
       "Content-Type": "application/json",
@@ -67,5 +48,31 @@ export class APICommunication {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  private buildOrderedParamString(
+    timestamp: number,
+    window: number,
+    additionalParams: Record<string, string> = {}
+  ) {
+    const params = new URLSearchParams();
+
+    params.append("timestamp", timestamp.toString());
+    params.append("window", window.toString());
+
+    Object.entries(additionalParams).forEach(([key, value]) => {
+      params.append(key, value);
+    });
+
+    const orderedParams = Array.from(params.entries()).sort();
+    return new URLSearchParams(orderedParams).toString();
+  }
+
+  private createSignature(paramString: string) {
+    if (!this.cryptography) return "";
+
+    const encodedParams = this.cryptography.encodeParams(paramString);
+    const signature = this.cryptography.generateSignature(encodedParams);
+    return this.cryptography.encodeBase64(signature);
   }
 }
