@@ -6,8 +6,8 @@ import { HttpMethod } from "./constants";
 export class MarketAPI {
   private apiClient: APIClient;
 
-  constructor() {
-    this.apiClient = new APIClient(null);
+  constructor(apiClient = new APIClient(null)) {
+    this.apiClient = apiClient;
   }
 
   async getAssets(): Promise<Asset[]> {
