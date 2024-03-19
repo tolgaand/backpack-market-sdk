@@ -86,9 +86,7 @@ describe("AuthenticatedAPI", () => {
   });
 
   test("cancelOpenOrders", async () => {
-    const cancelOpenOrders = await authenticatedApi.cancelOpenOrders(
-      "SOL_USDC"
-    );
+    const cancelOpenOrders = await authenticatedApi.cancelOpenOrders("SOL_USDC");
     expect(cancelOpenOrders).toBeDefined();
   });
 });

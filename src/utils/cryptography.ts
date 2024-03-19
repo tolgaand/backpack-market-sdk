@@ -16,10 +16,7 @@ export class Cryptography {
   }
 
   generateSignature(encodedParams: Uint8Array): Uint8Array {
-    const signatureKey = new Uint8Array([
-      ...this.secretKeyUint8Array,
-      ...this.apiKeyUint8Array,
-    ]);
+    const signatureKey = new Uint8Array([...this.secretKeyUint8Array, ...this.apiKeyUint8Array]);
     return nacl.sign.detached(encodedParams, signatureKey);
   }
 

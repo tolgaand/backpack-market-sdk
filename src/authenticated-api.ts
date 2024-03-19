@@ -1,61 +1,53 @@
-import { APICommunication } from "./utils/api-communication";
+import { APIClient } from "./utils/api-client";
 import { Cryptography } from "./utils/cryptography";
-import {
-  Balance,
-  Deposit,
-  Withdrawal,
-  DepositAddress,
-  Order,
-  Fill,
-} from "./types";
+import { Balance, Deposit, Withdrawal, DepositAddress, Order, Fill } from "./types";
+import { AUTHENTICATED_ENDPOINTS } from "./constants/authenticated-endpoints";
+import { INSTRUCTIONS } from "./constants/instructions";
+import { HttpMethod } from "./constants";
 
 export class AuthenticatedAPI {
-  private apiCommunication: APICommunication;
+  private apiClient: APIClient;
 
   constructor(params: { apiKey: string; secretKey: string }) {
     const { apiKey, secretKey } = params;
 
-    if (!apiKey || !secretKey)
-      throw new Error("API Key and Secret Key are required");
+    if (!apiKey || !secretKey) throw new Error("API Key and Secret Key are required");
 
     const cryptography = new Cryptography(apiKey, secretKey);
-    this.apiCommunication = new APICommunication(cryptography);
+    this.apiClient = new APIClient(cryptography);
   }
 
   async getBalances(): Promise<Record<string, Balance>> {
-    return this.apiCommunication.sendRequest("GET", "/api/v1/capital", {
-      instruction: "balanceQuery",
+    return this.apiClient.sendRequest(HttpMethod.GET, AUTHENTICATED_ENDPOINTS.CAPITAL, {
+      instruction: INSTRUCTIONS.BALANCE_QUERY,
     });
   }
 
-  async getDeposits({
-    limit = 100,
-    offset = 0,
-  }: { limit?: number; offset?: number } = {}): Promise<Deposit[]> {
-    return this.apiCommunication.sendRequest(
-      "GET",
-      `/wapi/v1/capital/deposits?limit=${limit}&offset=${offset}`,
-      { instruction: "depositQueryAll" }
+  async getDeposits({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}): Promise<
+    Deposit[]
+  > {
+    return this.apiClient.sendRequest(
+      HttpMethod.GET,
+      AUTHENTICATED_ENDPOINTS.DEPOSITS(limit, offset),
+      { instruction: INSTRUCTIONS.DEPOSIT_QUERY_ALL }
     );
   }
 
   async getDepositAddress(blockchain: string): Promise<DepositAddress> {
-    return this.apiCommunication.sendRequest(
-      "GET",
-      `/wapi/v1/capital/deposit/address?blockchain=${blockchain}`,
-      { instruction: "depositAddressQuery" }
+    return this.apiClient.sendRequest(
+      HttpMethod.GET,
+      AUTHENTICATED_ENDPOINTS.DEPOSIT_ADDRESS(blockchain),
+      { instruction: INSTRUCTIONS.DEPOSIT_ADDRESS_QUERY }
     );
   }
 
-  async getWithdrawals(
-    params: { limit?: number; offset?: number } = {}
-  ): Promise<Withdrawal[]> {
+  async getWithdrawals(params: { limit?: number; offset?: number } = {}): Promise<Withdrawal[]> {
     const { limit = 100, offset = 0 } = params;
-    return this.apiCommunication.sendRequest(
-      "GET",
-      `/wapi/v1/capital/withdrawals?limit=${limit}&offset=${offset}`,
+    return this.apiClient.sendRequest(
+      HttpMethod.GET,
+      AUTHENTICATED_ENDPOINTS.WITHDRAWALS(limit, offset),
       {
-        instruction: "withdrawalQueryAll",
+        instruction: INSTRUCTIONS.WITHDRAWAL_QUERY_ALL,
       }
     );
   }
@@ -68,8 +60,7 @@ export class AuthenticatedAPI {
     clientId?: number;
     twoFactorToken?: string;
   }): Promise<Withdrawal> {
-    const { address, blockchain, quantity, symbol, clientId, twoFactorToken } =
-      params;
+    const { address, blockchain, quantity, symbol, clientId, twoFactorToken } = params;
 
     const body = {
       address,
@@ -79,14 +70,10 @@ export class AuthenticatedAPI {
       clientId,
       twoFactorToken,
     };
-    return this.apiCommunication.sendRequest(
-      "POST",
-      "/wapi/v1/capital/withdrawals",
-      {
-        ...body,
-        instruction: "withdraw",
-      }
-    );
+    return this.apiClient.sendRequest(HttpMethod.POST, AUTHENTICATED_ENDPOINTS.WITHDRAWALS(), {
+      ...body,
+      instruction: INSTRUCTIONS.WITHDRAW,
+    });
   }
 
   async getOrderHistory(
@@ -94,27 +81,23 @@ export class AuthenticatedAPI {
   ): Promise<Order[]> {
     const { limit = 100, offset = 0, symbol } = params;
 
-    let endpoint = `/wapi/v1/history/orders?limit=${limit}&offset=${offset}`;
-    if (symbol) {
-      endpoint += `&symbol=${symbol}`;
-    }
-    return this.apiCommunication.sendRequest("GET", endpoint, {
-      instruction: "orderHistoryQueryAll",
-    });
+    return this.apiClient.sendRequest(
+      HttpMethod.GET,
+      AUTHENTICATED_ENDPOINTS.ORDER_HISTORY(limit, offset, symbol),
+      {
+        instruction: INSTRUCTIONS.ORDER_HISTORY_QUERY_ALL,
+      }
+    );
   }
 
-  async getFillHistory(
-    symbol?: string,
-    limit: number = 100,
-    offset: number = 0
-  ): Promise<Fill[]> {
-    let endpoint = `/wapi/v1/history/fills?limit=${limit}&offset=${offset}`;
-    if (symbol) {
-      endpoint += `&symbol=${symbol}`;
-    }
-    return this.apiCommunication.sendRequest("GET", endpoint, {
-      instruction: "fillHistoryQueryAll",
-    });
+  async getFillHistory(symbol?: string, limit: number = 100, offset: number = 0): Promise<Fill[]> {
+    return this.apiClient.sendRequest(
+      HttpMethod.GET,
+      AUTHENTICATED_ENDPOINTS.FILL_HISTORY(limit, offset, symbol),
+      {
+        instruction: INSTRUCTIONS.FILL_HISTORY_QUERY_ALL,
+      }
+    );
   }
 
   async executeOrder({
@@ -136,12 +119,7 @@ export class AuthenticatedAPI {
     price: number;
     quantity: number;
     quoteQuantity?: string;
-    selfTradePrevention?:
-      | string
-      | "RejectTaker"
-      | "RejectMaker"
-      | "RejectBoth"
-      | "Allow";
+    selfTradePrevention?: string | "RejectTaker" | "RejectMaker" | "RejectBoth" | "Allow";
     side: string | "Bid" | "Ask";
     symbol: string;
     timeInForce?: string;
@@ -160,9 +138,9 @@ export class AuthenticatedAPI {
       timeInForce,
       triggerPrice,
     };
-    return this.apiCommunication.sendRequest("POST", "/api/v1/order", {
+    return this.apiClient.sendRequest(HttpMethod.POST, AUTHENTICATED_ENDPOINTS.ORDER(), {
       ...body,
-      instruction: "orderExecute",
+      instruction: INSTRUCTIONS.ORDER_EXECUTE,
     });
   }
 
@@ -175,49 +153,33 @@ export class AuthenticatedAPI {
     clientId?: string;
     symbol: string;
   }): Promise<Order> {
-    let endpoint = `/api/v1/order?`;
-    if (orderId) {
-      endpoint += `orderId=${orderId}`;
-    } else if (clientId) {
-      endpoint += `clientId=${clientId}`;
-    }
-    if (symbol) {
-      endpoint += `&symbol=${symbol}`;
-    }
-    return this.apiCommunication.sendRequest("GET", endpoint, {
-      instruction: "orderQuery",
-    });
+    return this.apiClient.sendRequest(
+      HttpMethod.GET,
+      AUTHENTICATED_ENDPOINTS.ORDER(symbol, orderId, clientId),
+      {
+        instruction: INSTRUCTIONS.ORDER_QUERY,
+      }
+    );
   }
 
-  async cancelOrder({
-    orderId,
-    symbol,
-  }: {
-    orderId: string;
-    symbol: string;
-  }): Promise<Order> {
+  async cancelOrder({ orderId, symbol }: { orderId: string; symbol: string }): Promise<Order> {
     const body = { orderId, symbol };
-    return this.apiCommunication.sendRequest("DELETE", "/api/v1/order", {
+    return this.apiClient.sendRequest(HttpMethod.DELETE, AUTHENTICATED_ENDPOINTS.ORDER(), {
       ...body,
-      instruction: "orderCancel",
+      instruction: INSTRUCTIONS.ORDER_CANCEL,
     });
   }
 
   async getOpenOrders(symbol?: string): Promise<Order[]> {
-    let endpoint = `/api/v1/orders`;
-    if (symbol) {
-      endpoint += `?symbol=${symbol}`;
-    }
-    return this.apiCommunication.sendRequest("GET", endpoint, {
-      instruction: "orderQueryAll",
+    return this.apiClient.sendRequest(HttpMethod.GET, AUTHENTICATED_ENDPOINTS.ORDERS(symbol), {
+      instruction: INSTRUCTIONS.ORDER_QUERY_ALL,
     });
   }
 
   async cancelOpenOrders(symbol: string): Promise<string> {
-    const body = { symbol };
-    return this.apiCommunication.sendRequest("DELETE", "/api/v1/orders", {
-      ...body,
-      instruction: "orderCancelAll",
+    return this.apiClient.sendRequest(HttpMethod.DELETE, AUTHENTICATED_ENDPOINTS.ORDERS(), {
+      symbol,
+      instruction: INSTRUCTIONS.ORDER_CANCEL_ALL,
     });
   }
 }

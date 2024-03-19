@@ -146,12 +146,7 @@ export interface ExecuteOrderParams {
   price: number;
   quantity: number;
   quoteQuantity?: string;
-  selfTradePrevention?:
-    | string
-    | "RejectTaker"
-    | "RejectMaker"
-    | "RejectBoth"
-    | "Allow";
+  selfTradePrevention?: string | "RejectTaker" | "RejectMaker" | "RejectBoth" | "Allow";
   side: string | "Bid" | "Ask";
   symbol: string;
   timeInForce?: string;
