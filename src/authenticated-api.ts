@@ -1,9 +1,21 @@
 import { APIClient } from "./utils/api-client";
 import { Cryptography } from "./utils/cryptography";
-import { Balance, Deposit, Withdrawal, DepositAddress, Order, Fill } from "./types";
 import { AUTHENTICATED_ENDPOINTS } from "./constants/authenticated-endpoints";
 import { INSTRUCTIONS } from "./constants/instructions";
 import { HttpMethod } from "./constants";
+import {
+  BalancesResponse,
+  CancelOrderResponse,
+  DepositAddressResponse,
+  DepositsResponse,
+  ExecuteOrderResponse,
+  FillHistoryResponse,
+  OpenOrderResponse,
+  OpenOrdersResponse,
+  OrderHistoryResponse,
+  WithdrawalResponse,
+  WithdrawalsResponse,
+} from "./interfaces";
 
 export class AuthenticatedAPI {
   private apiClient: APIClient;
@@ -17,15 +29,16 @@ export class AuthenticatedAPI {
     this.apiClient = apiClient ?? new APIClient(cryptography);
   }
 
-  async getBalances(): Promise<Record<string, Balance>> {
+  async getBalances(): Promise<BalancesResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, AUTHENTICATED_ENDPOINTS.CAPITAL, {
       instruction: INSTRUCTIONS.BALANCE_QUERY,
     });
   }
 
-  async getDeposits({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}): Promise<
-    Deposit[]
-  > {
+  async getDeposits({
+    limit = 100,
+    offset = 0,
+  }: { limit?: number; offset?: number } = {}): Promise<DepositsResponse> {
     return this.apiClient.sendRequest(
       HttpMethod.GET,
       AUTHENTICATED_ENDPOINTS.DEPOSITS(limit, offset),
@@ -33,7 +46,7 @@ export class AuthenticatedAPI {
     );
   }
 
-  async getDepositAddress(blockchain: string): Promise<DepositAddress> {
+  async getDepositAddress(blockchain: string): Promise<DepositAddressResponse> {
     return this.apiClient.sendRequest(
       HttpMethod.GET,
       AUTHENTICATED_ENDPOINTS.DEPOSIT_ADDRESS(blockchain),
@@ -41,7 +54,9 @@ export class AuthenticatedAPI {
     );
   }
 
-  async getWithdrawals(params: { limit?: number; offset?: number } = {}): Promise<Withdrawal[]> {
+  async getWithdrawals(
+    params: { limit?: number; offset?: number } = {}
+  ): Promise<WithdrawalsResponse> {
     const { limit = 100, offset = 0 } = params;
     return this.apiClient.sendRequest(
       HttpMethod.GET,
@@ -59,7 +74,7 @@ export class AuthenticatedAPI {
     symbol: string;
     clientId?: number;
     twoFactorToken?: string;
-  }): Promise<Withdrawal> {
+  }): Promise<WithdrawalResponse> {
     const { address, blockchain, quantity, symbol, clientId, twoFactorToken } = params;
 
     const body = {
@@ -78,7 +93,7 @@ export class AuthenticatedAPI {
 
   async getOrderHistory(
     params: { limit?: number; offset?: number; symbol?: string } = {}
-  ): Promise<Order[]> {
+  ): Promise<OrderHistoryResponse> {
     const { limit = 100, offset = 0, symbol } = params;
 
     return this.apiClient.sendRequest(
@@ -90,7 +105,11 @@ export class AuthenticatedAPI {
     );
   }
 
-  async getFillHistory(symbol?: string, limit: number = 100, offset: number = 0): Promise<Fill[]> {
+  async getFillHistory(
+    symbol?: string,
+    limit: number = 100,
+    offset: number = 0
+  ): Promise<FillHistoryResponse> {
     return this.apiClient.sendRequest(
       HttpMethod.GET,
       AUTHENTICATED_ENDPOINTS.FILL_HISTORY(limit, offset, symbol),
@@ -124,7 +143,7 @@ export class AuthenticatedAPI {
     symbol: string;
     timeInForce?: string;
     triggerPrice?: string;
-  }): Promise<Order> {
+  }): Promise<ExecuteOrderResponse> {
     const body = {
       clientId,
       orderType,
@@ -152,7 +171,7 @@ export class AuthenticatedAPI {
     orderId?: string;
     clientId?: string;
     symbol: string;
-  }): Promise<Order> {
+  }): Promise<OpenOrderResponse> {
     return this.apiClient.sendRequest(
       HttpMethod.GET,
       AUTHENTICATED_ENDPOINTS.ORDER(symbol, orderId, clientId),
@@ -162,7 +181,13 @@ export class AuthenticatedAPI {
     );
   }
 
-  async cancelOrder({ orderId, symbol }: { orderId: string; symbol: string }): Promise<Order> {
+  async cancelOrder({
+    orderId,
+    symbol,
+  }: {
+    orderId: string;
+    symbol: string;
+  }): Promise<CancelOrderResponse> {
     const body = { orderId, symbol };
     return this.apiClient.sendRequest(HttpMethod.DELETE, AUTHENTICATED_ENDPOINTS.ORDER(), {
       ...body,
@@ -170,13 +195,13 @@ export class AuthenticatedAPI {
     });
   }
 
-  async getOpenOrders(symbol?: string): Promise<Order[]> {
+  async getOpenOrders(symbol?: string): Promise<OpenOrdersResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, AUTHENTICATED_ENDPOINTS.ORDERS(symbol), {
       instruction: INSTRUCTIONS.ORDER_QUERY_ALL,
     });
   }
 
-  async cancelOpenOrders(symbol: string): Promise<string> {
+  async cancelOpenOrders(symbol: string): Promise<CancelOrderResponse> {
     return this.apiClient.sendRequest(HttpMethod.DELETE, AUTHENTICATED_ENDPOINTS.ORDERS(), {
       symbol,
       instruction: INSTRUCTIONS.ORDER_CANCEL_ALL,
