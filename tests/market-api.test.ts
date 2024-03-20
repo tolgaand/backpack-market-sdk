@@ -24,13 +24,31 @@ describe("MarketAPI", () => {
   });
 
   test("getAssets", async () => {
-    const assets = await marketApi.getAssets();
-    expect(assets).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.ASSETS;
+
+    // Act
+    const result = await marketApi.getAssets();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getMarkets", async () => {
-    const markets = await marketApi.getMarkets();
-    expect(markets).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.MARKETS;
+
+    // Act
+    const result = await marketApi.getMarkets();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getTicker", async () => {
@@ -50,8 +68,17 @@ describe("MarketAPI", () => {
   });
 
   test("getTickers", async () => {
-    const tickers = await marketApi.getTickers();
-    expect(tickers).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.TICKERS;
+
+    // Act
+    const result = await marketApi.getTickers();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getDepth", async () => {
@@ -88,18 +115,45 @@ describe("MarketAPI", () => {
   });
 
   test("getStatus", async () => {
-    const status = await marketApi.getStatus();
-    expect(status).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.STATUS;
+
+    // Act
+    const result = await marketApi.getStatus();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getPing", async () => {
-    const ping = await marketApi.getPing();
-    expect(ping).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.PING;
+
+    // Act
+    const result = await marketApi.getPing();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getSystemTime", async () => {
-    const time = await marketApi.getSystemTime();
-    expect(time).toBeDefined();
+    // Arrange
+    const method = HttpMethod.GET;
+    const endpoint = MARKET_ENDPOINTS.TIME;
+
+    // Act
+    const result = await marketApi.getSystemTime();
+
+    // Assert
+    expect(result).toEqual(data);
+    expect(apiClient.sendRequest).toHaveBeenCalledTimes(1);
+    expect(apiClient.sendRequest).toHaveBeenCalledWith(method, endpoint);
   });
 
   test("getRecentTrades", async () => {
