@@ -5,3 +5,8 @@ export * from "./depth-response";
 export * from "./klines-response";
 export * from "./status-response";
 export * from "./trades-response";
+export * from "./orders-response";
+export * from "./balances-response";
+export * from "./deposits-response";
+export * from "./withdrawals-response";
+export * from "./fill-history-response";
