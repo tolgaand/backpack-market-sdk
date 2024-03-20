@@ -1,10 +1,34 @@
 import { BASE_URL } from "../constants";
+import {
+  DepthQueryParams,
+  KlinesQueryParams,
+  TickerQueryParams,
+  DepositsQueryParams,
+  OpenOrderQueryParams,
+  OpenOrdersQueryParams,
+  FillHistoryQueryParams,
+  WithdrawalsQueryParams,
+  OrderHistoryQueryParams,
+  RecentTradesQueryParams,
+  DepositAddressQueryParams,
+  HistoricalTradesQueryParams,
+} from "../interfaces";
 
-export function buildUrl(options: {
-  endpoint: string;
-  params?: Record<string, string | undefined>;
-  baseUrl?: BASE_URL;
-}) {
+type ParamsType =
+  | DepthQueryParams
+  | KlinesQueryParams
+  | TickerQueryParams
+  | DepositsQueryParams
+  | OpenOrderQueryParams
+  | OpenOrdersQueryParams
+  | FillHistoryQueryParams
+  | WithdrawalsQueryParams
+  | OrderHistoryQueryParams
+  | RecentTradesQueryParams
+  | DepositAddressQueryParams
+  | HistoricalTradesQueryParams;
+
+export function buildUrl(options: { endpoint: string; params?: ParamsType; baseUrl?: BASE_URL }) {
   options.params = options.params || {};
   options.baseUrl = options.baseUrl || BASE_URL.API;
 

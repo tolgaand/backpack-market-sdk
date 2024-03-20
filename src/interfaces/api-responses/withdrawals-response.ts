@@ -1,4 +1,4 @@
-import { Blockchain } from "../blockchain";
+import { Blockchain } from "../types";
 
 interface Withdrawal {
   id: number;

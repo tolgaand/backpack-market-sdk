@@ -40,7 +40,7 @@ export class APIClient {
       ...((method === "POST" || method === "DELETE") && {
         data: additionalParams,
       }),
-      params: method === "GET" && additionalParams,
+      // params: method === "GET" && additionalParams,
     };
 
     try {

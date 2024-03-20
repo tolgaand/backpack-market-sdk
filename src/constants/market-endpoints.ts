@@ -1,3 +1,10 @@
+import {
+  DepthQueryParams,
+  HistoricalTradesQueryParams,
+  KlinesQueryParams,
+  RecentTradesQueryParams,
+  TickerQueryParams,
+} from "../interfaces";
 import { buildUrl } from "../utils/build-url";
 
 export const MARKET_ENDPOINTS = {
@@ -8,30 +15,25 @@ export const MARKET_ENDPOINTS = {
   PING: buildUrl({ endpoint: "/ping" }),
   TIME: buildUrl({ endpoint: "/time" }),
 
-  TICKER: (symbol: string) => buildUrl({ endpoint: "/ticker", params: { symbol } }),
+  TICKER: (params: TickerQueryParams) => buildUrl({ endpoint: "/ticker", params }),
 
-  DEPTH: (symbol: string) => buildUrl({ endpoint: "/depth", params: { symbol } }),
+  DEPTH: (params: DepthQueryParams) => buildUrl({ endpoint: "/depth", params }),
 
-  RECENT_TRADES: (symbol: string, limit: number) =>
+  RECENT_TRADES: (params: RecentTradesQueryParams) =>
     buildUrl({
       endpoint: "/trades",
-      params: { symbol, limit: limit.toString() },
+      params,
     }),
 
-  HISTORICAL_TRADES: (symbol: string, limit: number, offset: number) =>
+  HISTORICAL_TRADES: (params: HistoricalTradesQueryParams) =>
     buildUrl({
       endpoint: "/trades/history",
-      params: { symbol, limit: limit.toString(), offset: offset.toString() },
+      params,
     }),
 
-  KLINES: (symbol: string, interval: string, startTime?: number, endTime?: number) =>
+  KLINES: (params: KlinesQueryParams) =>
     buildUrl({
       endpoint: "/klines",
-      params: {
-        symbol,
-        interval,
-        startTime: startTime?.toString(),
-        endTime: endTime?.toString(),
-      },
+      params,
     }),
 };

@@ -3,12 +3,17 @@ import { MARKET_ENDPOINTS } from "./constants/market-endpoints";
 import { HttpMethod } from "./constants";
 import {
   AssetsResponse,
+  DepthQueryParams,
   DepthResponse,
+  HistoricalTradesQueryParams,
   HistoricalTradesResponse,
+  KlinesQueryParams,
   KlinesResponse,
   MarketsResponse,
+  RecentTradesQueryParams,
   RecentTradesResponse,
   StatusResponse,
+  TickerQueryParams,
   TickersResponse,
 } from "./interfaces";
 
@@ -19,65 +24,36 @@ export class MarketAPI {
     this.apiClient = apiClient;
   }
 
-  async getAssets(): Promise<AssetsResponse> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.ASSETS);
-  }
+  getAssets = (): Promise<AssetsResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.ASSETS);
 
-  async getMarkets(): Promise<MarketsResponse> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.MARKETS);
-  }
+  getMarkets = (): Promise<MarketsResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.MARKETS);
 
-  async getTicker(symbol: string): Promise<TickersResponse> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKER(symbol));
-  }
+  getTicker = (params: TickerQueryParams): Promise<TickersResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKER(params));
 
-  async getTickers(): Promise<TickersResponse> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKERS);
-  }
+  getTickers = (): Promise<TickersResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKERS);
 
-  async getDepth(symbol: string): Promise<DepthResponse> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.DEPTH(symbol));
-  }
+  getDepth = (params: DepthQueryParams): Promise<DepthResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.DEPTH(params));
 
-  async getKlines(
-    symbol: string,
-    interval: string,
-    startTime?: number,
-    endTime?: number
-  ): Promise<KlinesResponse> {
-    return this.apiClient.sendRequest(
-      HttpMethod.GET,
-      MARKET_ENDPOINTS.KLINES(symbol, interval, startTime, endTime)
-    );
-  }
+  getKlines = (params: KlinesQueryParams): Promise<KlinesResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.KLINES(params));
 
-  async getStatus(): Promise<StatusResponse> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.STATUS);
-  }
+  getStatus = (): Promise<StatusResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.STATUS);
 
-  async getPing(): Promise<string> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.PING);
-  }
+  getPing = (): Promise<string> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.PING);
 
-  async getSystemTime(): Promise<number> {
-    return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TIME);
-  }
+  getSystemTime = (): Promise<number> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TIME);
 
-  async getRecentTrades(symbol: string, limit: number = 100): Promise<RecentTradesResponse> {
-    return this.apiClient.sendRequest(
-      HttpMethod.GET,
-      MARKET_ENDPOINTS.RECENT_TRADES(symbol, limit)
-    );
-  }
+  getRecentTrades = (params: RecentTradesQueryParams): Promise<RecentTradesResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.RECENT_TRADES(params));
 
-  async getHistoricalTrades(
-    symbol: string,
-    limit: number = 100,
-    offset: number = 0
-  ): Promise<HistoricalTradesResponse> {
-    return this.apiClient.sendRequest(
-      HttpMethod.GET,
-      MARKET_ENDPOINTS.HISTORICAL_TRADES(symbol, limit, offset)
-    );
-  }
+  getHistoricalTrades = (params: HistoricalTradesQueryParams): Promise<HistoricalTradesResponse> =>
+    this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.HISTORICAL_TRADES(params));
 }

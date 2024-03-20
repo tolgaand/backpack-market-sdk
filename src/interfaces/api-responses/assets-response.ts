@@ -1,4 +1,4 @@
-import { Blockchain } from "../shared/common.interface";
+import { Blockchain } from "../types";
 
 interface Token {
   blockchain: Blockchain;

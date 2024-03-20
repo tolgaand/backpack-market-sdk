@@ -1,53 +1,65 @@
 import { BASE_URL } from ".";
+import {
+  CancelOrderBody,
+  DepositAddressQueryParams,
+  DepositsQueryParams,
+  ExecuteOrderBody,
+  FillHistoryQueryParams,
+  OpenOrderQueryParams,
+  OpenOrdersQueryParams,
+  OrderHistoryQueryParams,
+  WithdrawalsBody,
+  WithdrawalsQueryParams,
+} from "../interfaces";
 import { buildUrl } from "../utils/build-url";
 
 export const AUTHENTICATED_ENDPOINTS = {
   CAPITAL: buildUrl({ endpoint: "/capital" }),
 
-  DEPOSITS: (limit: number, offset: number) =>
+  DEPOSITS: (params?: DepositsQueryParams) =>
     buildUrl({
       endpoint: "/capital/deposits",
       baseUrl: BASE_URL.WAPI,
-      params: { limit: limit.toString(), offset: offset.toString() },
+      params,
     }),
 
-  DEPOSIT_ADDRESS: (blockchain: string) =>
+  DEPOSIT_ADDRESS: (params: DepositAddressQueryParams) =>
     buildUrl({
       endpoint: "/capital/deposit/address",
       baseUrl: BASE_URL.WAPI,
-      params: { blockchain },
+      params,
     }),
 
-  WITHDRAWALS: (limit?: number, offset?: number) =>
+  WITHDRAWALS: (params?: WithdrawalsQueryParams) =>
     buildUrl({
       endpoint: "/capital/withdrawals",
       baseUrl: BASE_URL.WAPI,
-      params: { limit: limit?.toString(), offset: offset?.toString() },
+      params,
     }),
 
-  ORDER_HISTORY: (limit: number, offset: number, symbol?: string) =>
+  ORDER_HISTORY: (params?: OrderHistoryQueryParams) =>
     buildUrl({
       endpoint: "/history/orders",
       baseUrl: BASE_URL.WAPI,
-      params: { symbol, limit: limit.toString(), offset: offset.toString() },
+      params,
     }),
 
-  FILL_HISTORY: (limit: number, offset: number, symbol?: string) =>
+  FILL_HISTORY: (params?: FillHistoryQueryParams) =>
     buildUrl({
       endpoint: "/history/fills",
       baseUrl: BASE_URL.WAPI,
-      params: { symbol, limit: limit.toString(), offset: offset.toString() },
+      params,
     }),
 
-  ORDER: (symbol?: string, orderId?: string, clientId?: string) =>
+  ORDER: (params?: OpenOrderQueryParams) =>
     buildUrl({
       endpoint: "/order",
-      params: { symbol, orderId, clientId },
+      params,
     }),
 
-  ORDERS: (symbol?: string) =>
+  ORDERS: (params?: OpenOrdersQueryParams) =>
     buildUrl({
       endpoint: "/orders",
-      params: { symbol },
+      params,
     }),
 };

@@ -6,7 +6,8 @@ import { AUTHENTICATED_ENDPOINTS } from "../src/constants/authenticated-endpoint
 import { HttpMethod } from "../src/constants";
 import * as naclUtil from "tweetnacl-util";
 import { INSTRUCTIONS } from "../src/constants/instructions";
-
+import { Blockchain, OrderType, Side } from "../src/interfaces/types";
+import { ExecuteOrderBody } from "../src/interfaces";
 jest.mock("axios");
 
 const mAxios = axios as jest.MockedFunction<typeof axios>;
@@ -47,12 +48,10 @@ describe("AuthenticatedAPI", () => {
   test("getDeposits", async () => {
     // Arrange
     const method = HttpMethod.GET;
-    const limit = 100;
-    const offset = 10;
-    const endpoint = AUTHENTICATED_ENDPOINTS.DEPOSITS(limit, offset);
+    const endpoint = AUTHENTICATED_ENDPOINTS.DEPOSITS();
 
     // Act
-    const result = await authenticatedApi.getDeposits({ limit, offset });
+    const result = await authenticatedApi.getDeposits();
 
     // Assert
     expect(result).toEqual(data);
@@ -65,11 +64,12 @@ describe("AuthenticatedAPI", () => {
   test("getDepositAddress", async () => {
     // Arrange
     const method = HttpMethod.GET;
-    const blockchain = "BTC";
-    const endpoint = AUTHENTICATED_ENDPOINTS.DEPOSIT_ADDRESS(blockchain);
+    const blockchain = Blockchain.Solana;
+    const params = { blockchain };
+    const endpoint = AUTHENTICATED_ENDPOINTS.DEPOSIT_ADDRESS(params);
 
     // Act
-    const result = await authenticatedApi.getDepositAddress(blockchain);
+    const result = await authenticatedApi.getDepositAddress(params);
 
     // Assert
     expect(result).toEqual(data);
@@ -82,12 +82,10 @@ describe("AuthenticatedAPI", () => {
   test("getWithdrawals", async () => {
     // Arrange
     const method = HttpMethod.GET;
-    const limit = 100;
-    const offset = 10;
-    const endpoint = AUTHENTICATED_ENDPOINTS.WITHDRAWALS(limit, offset);
+    const endpoint = AUTHENTICATED_ENDPOINTS.WITHDRAWALS();
 
     // Act
-    const result = await authenticatedApi.getWithdrawals({ limit, offset });
+    const result = await authenticatedApi.getWithdrawals();
 
     // Assert
     expect(result).toEqual(data);
@@ -101,11 +99,11 @@ describe("AuthenticatedAPI", () => {
     // Arrange
     const method = HttpMethod.POST;
     const endpoint = AUTHENTICATED_ENDPOINTS.WITHDRAWALS();
-    const body = {
-      quantity: 1,
+    const body: ExecuteOrderBody = {
       symbol: "SOL_USDC",
-      blockchain: "Solana",
-      address: "xxx",
+      side: Side.Bid,
+      quantity: "1",
+      orderType: OrderType.Limit,
     };
 
     // Act
@@ -123,13 +121,10 @@ describe("AuthenticatedAPI", () => {
   test("getOrderHistory", async () => {
     // Arrange
     const method = HttpMethod.GET;
-    const limit = 100;
-    const offset = 10;
-    const symbol = "SOL_USDC";
-    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER_HISTORY(limit, offset, symbol);
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER_HISTORY();
 
     // Act
-    const result = await authenticatedApi.getOrderHistory({ limit, offset, symbol });
+    const result = await authenticatedApi.getOrderHistory();
 
     // Assert
     expect(result).toEqual(data);
@@ -142,13 +137,11 @@ describe("AuthenticatedAPI", () => {
   test("getFillHistory", async () => {
     // Arrange
     const method = HttpMethod.GET;
-    const limit = 100;
-    const offset = 10;
-    const symbol = "SOL_USDC";
-    const endpoint = AUTHENTICATED_ENDPOINTS.FILL_HISTORY(limit, offset, symbol);
+
+    const endpoint = AUTHENTICATED_ENDPOINTS.FILL_HISTORY();
 
     // Act
-    const result = await authenticatedApi.getFillHistory(symbol, limit, offset);
+    const result = await authenticatedApi.getFillHistory();
 
     // Assert
     expect(result).toEqual(data);
@@ -161,13 +154,12 @@ describe("AuthenticatedAPI", () => {
   test("getOpenOrder", async () => {
     // Arrange
     const method = HttpMethod.GET;
-    const orderId = "1";
-    const clientId = "2";
     const symbol = "SOL_USDC";
-    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER(symbol, orderId, clientId);
+    const params = { symbol };
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDER(params);
 
     // Act
-    const result = await authenticatedApi.getOpenOrder({ orderId, clientId, symbol });
+    const result = await authenticatedApi.getOpenOrder(params);
 
     // Assert
     expect(result).toEqual(data);
@@ -202,12 +194,12 @@ describe("AuthenticatedAPI", () => {
     // Arrange
     const method = HttpMethod.POST;
     const endpoint = AUTHENTICATED_ENDPOINTS.ORDER();
-    const body = {
-      orderType: "Limit",
-      price: 1,
-      quantity: 1,
-      side: "Bid",
-      symbol: "BTCUSDT",
+    const body: ExecuteOrderBody = {
+      orderType: OrderType.Limit,
+      price: "1",
+      quantity: "1",
+      side: Side.Bid,
+      symbol: "SOL_USDC",
     };
 
     // Act
@@ -226,10 +218,11 @@ describe("AuthenticatedAPI", () => {
     // Arrange
     const method = HttpMethod.GET;
     const symbol = "SOL_USDC";
-    const endpoint = AUTHENTICATED_ENDPOINTS.ORDERS(symbol);
+    const params = { symbol };
+    const endpoint = AUTHENTICATED_ENDPOINTS.ORDERS(params);
 
     // Act
-    const result = await authenticatedApi.getOpenOrders(symbol);
+    const result = await authenticatedApi.getOpenOrders(params);
 
     // Assert
     expect(result).toEqual(data);
@@ -244,9 +237,10 @@ describe("AuthenticatedAPI", () => {
     const method = HttpMethod.DELETE;
     const endpoint = AUTHENTICATED_ENDPOINTS.ORDERS();
     const symbol = "SOL_USDC";
+    const params = { symbol };
 
     // Act
-    const result = await authenticatedApi.cancelOpenOrders(symbol);
+    const result = await authenticatedApi.cancelOpenOrders(params);
 
     // Assert
     expect(result).toEqual(data);
