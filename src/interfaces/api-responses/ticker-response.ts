@@ -1,4 +1,4 @@
-interface TickerResponse {
+export interface TickerResponse {
   symbol: string;
   firstPrice: string;
   lastPrice: string;

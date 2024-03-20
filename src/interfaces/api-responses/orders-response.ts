@@ -18,15 +18,17 @@ interface OrderResponse {
   createdAt: number;
 }
 
-export interface OrderHistoryResponse
-  extends Omit<OrderResponse, "executedQuantity" | "executedQuoteQuantity"> {
+interface OrderHistory extends Omit<OrderResponse, "executedQuantity" | "executedQuoteQuantity"> {
   price: string;
   postOnly: boolean;
 }
 
 export interface OpenOrderResponse extends OrderResponse {}
 export interface CancelOrderResponse extends OrderResponse {}
-export interface ExecuteOrderResponse extends OrderResponse {}
 
 export interface OpenOrdersResponse extends Array<OrderResponse> {}
 export interface CancelOrdersResponse extends Array<OrderResponse> {}
+
+export interface ExecuteOrderResponse extends OrderResponse {}
+
+export interface OrderHistoryResponse extends Array<OrderHistory> {}

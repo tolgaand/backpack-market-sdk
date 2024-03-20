@@ -1,6 +1,8 @@
+import { Blockchain } from "../blockchain";
+
 interface Withdrawal {
   id: number;
-  blockchain: string;
+  blockchain: Blockchain;
   clientId: string;
   identifier: string;
   quantity: string;
@@ -14,3 +16,4 @@ interface Withdrawal {
 }
 
 export interface WithdrawalsResponse extends Array<Withdrawal> {}
+export interface WithdrawalResponse extends Withdrawal {}

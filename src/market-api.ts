@@ -1,7 +1,16 @@
 import { APIClient } from "./utils/api-client";
-import { Asset, Market, Ticker, Trade, Kline, SystemStatus } from "./types";
 import { MARKET_ENDPOINTS } from "./constants/market-endpoints";
 import { HttpMethod } from "./constants";
+import {
+  AssetsResponse,
+  DepthResponse,
+  HistoricalTradesResponse,
+  KlinesResponse,
+  MarketsResponse,
+  RecentTradesResponse,
+  StatusResponse,
+  TickersResponse,
+} from "./interfaces";
 
 export class MarketAPI {
   private apiClient: APIClient;
@@ -10,24 +19,23 @@ export class MarketAPI {
     this.apiClient = new APIClient(null);
   }
 
-  async getAssets(): Promise<Asset[]> {
+  async getAssets(): Promise<AssetsResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.ASSETS);
   }
 
-  async getMarkets(): Promise<Market[]> {
+  async getMarkets(): Promise<MarketsResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.MARKETS);
   }
 
-  async getTicker(symbol: string): Promise<Ticker> {
+  async getTicker(symbol: string): Promise<TickersResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKER(symbol));
   }
 
-  async getTickers(): Promise<Ticker[]> {
+  async getTickers(): Promise<TickersResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TICKERS);
   }
 
-  async getDepth(symbol: string): Promise<any> {
-    // Define a specific type for depth
+  async getDepth(symbol: string): Promise<DepthResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.DEPTH(symbol));
   }
 
@@ -36,14 +44,14 @@ export class MarketAPI {
     interval: string,
     startTime?: number,
     endTime?: number
-  ): Promise<Kline[]> {
+  ): Promise<KlinesResponse> {
     return this.apiClient.sendRequest(
       HttpMethod.GET,
       MARKET_ENDPOINTS.KLINES(symbol, interval, startTime, endTime)
     );
   }
 
-  async getStatus(): Promise<SystemStatus> {
+  async getStatus(): Promise<StatusResponse> {
     return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.STATUS);
   }
 
@@ -55,7 +63,7 @@ export class MarketAPI {
     return this.apiClient.sendRequest(HttpMethod.GET, MARKET_ENDPOINTS.TIME);
   }
 
-  async getRecentTrades(symbol: string, limit: number = 100): Promise<Trade[]> {
+  async getRecentTrades(symbol: string, limit: number = 100): Promise<RecentTradesResponse> {
     return this.apiClient.sendRequest(
       HttpMethod.GET,
       MARKET_ENDPOINTS.RECENT_TRADES(symbol, limit)
@@ -66,7 +74,7 @@ export class MarketAPI {
     symbol: string,
     limit: number = 100,
     offset: number = 0
-  ): Promise<Trade[]> {
+  ): Promise<HistoricalTradesResponse> {
     return this.apiClient.sendRequest(
       HttpMethod.GET,
       MARKET_ENDPOINTS.HISTORICAL_TRADES(symbol, limit, offset)
